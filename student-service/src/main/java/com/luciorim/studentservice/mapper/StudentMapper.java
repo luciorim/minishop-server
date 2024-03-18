@@ -2,9 +2,9 @@ package com.luciorim.studentservice.mapper;
 
 import com.luciorim.studentservice.dto.ResponseStudentDto;
 import com.luciorim.studentservice.entities.Student;
-import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
-@Mapper
+@Component
 public class StudentMapper {
 
     public ResponseStudentDto toDto(Student student){

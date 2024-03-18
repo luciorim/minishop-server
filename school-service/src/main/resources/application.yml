@@ -6,19 +6,19 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
 
 server:
-  port: 8090
+  port: 8070
 
 
 spring:
   application:
-    name: student-service
+    name: school-service
 
   config:
     import: optional:configserver:http://localhost:8888
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/students
+    url: jdbc:postgresql://localhost:5432/schools
     username: postgres
     password: postgres
   jpa:
