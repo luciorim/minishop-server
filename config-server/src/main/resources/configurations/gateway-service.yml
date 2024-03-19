@@ -5,6 +5,7 @@ eureka:
   client:
     register-with-eureka: false
 
+
 spring:
   cloud:
     gateway:
