@@ -1,4 +1,4 @@
-rootProject.name = 'schoolhub-server'
+rootProject.name = 'minishop-server'
 
 include("config-server")
 include("eureka-discovery-service")
