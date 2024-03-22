@@ -32,6 +32,9 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+
 }
 
 dependencyManagement {
