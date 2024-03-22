@@ -1,12 +1,12 @@
 package com.luciorim.inventoryservice.controller;
 
+import com.luciorim.inventoryservice.dto.ResponseInventoryDto;
 import com.luciorim.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -15,11 +15,11 @@ public class InventoryController {
 
     private final InventoryService inventoryService;
 
-    @GetMapping("/{sku-code}")
-    public ResponseEntity<Boolean> isInStock(@PathVariable("sku-code") String skuCode){
+    @GetMapping()
+    public ResponseEntity<List<ResponseInventoryDto>> isInStock(@RequestParam List<String> skuCodes){
 
         return ResponseEntity
-                .ok(inventoryService.isInStock(skuCode));
+                .ok(inventoryService.isInStock(skuCodes));
 
     }
 
