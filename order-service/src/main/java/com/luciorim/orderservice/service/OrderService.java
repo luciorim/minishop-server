@@ -5,6 +5,7 @@ import com.luciorim.orderservice.dto.ResponseOrderDto;
 import com.luciorim.orderservice.mapper.OrderLineItemMapper;
 import com.luciorim.orderservice.mapper.OrderMapper;
 import com.luciorim.orderservice.model.Order;
+import com.luciorim.orderservice.repository.OrderLineItemRepository;
 import com.luciorim.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,23 +25,26 @@ public class OrderService {
     private final OrderLineItemMapper orderLineItemMapper;
     private final OrderMapper orderMapper;
     private final OrderRepository orderRepository;
+    private final OrderLineItemRepository orderLineItemRepository;
 
     public void createOrder(RequestCreateOrderDto requestCreateOrderDto) {
 
         log.info("List of items in requestOrderDto: {}", requestCreateOrderDto.getOrderItems());
 
+        var orderLineItems = requestCreateOrderDto
+                .getOrderItems()
+                .stream()
+                .map(orderLineItemMapper::toEntity)
+                .toList();
+
         var order = Order.builder()
                 .orderNumber(UUID.randomUUID().toString())
-                .orderItems(
-                        requestCreateOrderDto
-                                .getOrderItems()
-                                .stream()
-                                .map(orderLineItemMapper::toEntity)
-                                .collect(Collectors.toList())
-                ).build();
+                .orderItems(orderLineItems)
+                .build();
 
         log.info("Created new Order: {}", order);
 
+        orderLineItemRepository.saveAll(orderLineItems);
         orderRepository.save(order);
 
     }
