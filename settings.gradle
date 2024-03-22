@@ -3,5 +3,4 @@ rootProject.name = 'minishop-server'
 include("config-server")
 include("eureka-discovery-service")
 include("gateway-service")
-include("school-service")
-include("student-service")
+include("product-service")
