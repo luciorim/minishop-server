@@ -23,8 +23,8 @@ public class InventoryServiceApplication {
 		return args -> {
 
 			var inventories = List.of(
-				new Inventory(null, "iphone12", 6),
-				new Inventory(null, "ps5", 10)
+				new Inventory(null, "iphone12", 10),
+				new Inventory(null, "ps5", 2)
 			);
 
 			log.info("Added mock data to DB: {}", inventories);

@@ -1,4 +1,4 @@
-package com.luciorim.inventoryservice.dto;
+package com.luciorim.orderservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
