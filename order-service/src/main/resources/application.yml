@@ -1,0 +1,19 @@
+server:
+  port: 9090
+
+spring:
+  cloud:
+    config:
+      enabled: false
+
+  datasource:
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/orderservicedb
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
