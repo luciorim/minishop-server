@@ -37,6 +37,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.2.4")
 
+    implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:3.1.0")
 }
 
 dependencyManagement {

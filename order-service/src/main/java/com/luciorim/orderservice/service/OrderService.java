@@ -1,9 +1,6 @@
 package com.luciorim.orderservice.service;
 
-import com.luciorim.orderservice.dto.OrderLineItemDto;
-import com.luciorim.orderservice.dto.RequestCreateOrderDto;
-import com.luciorim.orderservice.dto.ResponseInventoryDto;
-import com.luciorim.orderservice.dto.ResponseOrderDto;
+import com.luciorim.orderservice.dto.*;
 import com.luciorim.orderservice.mapper.OrderLineItemMapper;
 import com.luciorim.orderservice.mapper.OrderMapper;
 import com.luciorim.orderservice.model.Order;
@@ -12,6 +9,7 @@ import com.luciorim.orderservice.repository.OrderLineItemRepository;
 import com.luciorim.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -47,11 +45,6 @@ public class OrderService {
         Map<String, Integer> skuCodeWithNeededQuantity = orderLineItems.stream()
                 .collect(Collectors.toMap(OrderLineItem::getSkuCode, OrderLineItem::getQuantity));
 
-        Order order = Order.builder()
-                .orderNumber(UUID.randomUUID().toString())
-                .orderItems(orderLineItems)
-                .build();
-
         List<String> scuCodes = requestCreateOrderDto
                 .getOrderItems()
                 .stream()
@@ -73,25 +66,24 @@ public class OrderService {
            var enabledQuantity = returnedInventory.getEnabledQuantity();
 
            if(skuCodeWithNeededQuantity.get(skuCode) > enabledQuantity){
-
                throw new IllegalArgumentException("There is no enough products, please try again later");
-
            }
-
        }
 
        var productsInStock = Arrays.stream(responseInventoryDtos)
                        .allMatch(ResponseInventoryDto::isInStock);
 
        if(productsInStock) {
+           Order order = Order.builder()
+                   .orderNumber(UUID.randomUUID().toString())
+                   .orderItems(orderLineItems)
+                   .build();
+
            orderRepository.save(order);
            log.info("Created new Order: {}", order);
        }else{
            throw new IllegalArgumentException("Products not in stock, please try again later");
        }
-
-
-
     }
 
     public List<ResponseOrderDto> getAllOrders() {
