@@ -13,7 +13,9 @@ eureka:
   server:
     wait-time-in-ms-when-sync-empty: 5
 
-
+logging:
+  file:
+    name: logs/eureka-service.log
 
 server:
   port: 8761

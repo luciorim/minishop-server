@@ -45,14 +45,16 @@ public class OrderController {
 
     }
 
-    public ResponseEntity<FallbackDto> fallback(
+    public CompletableFuture<ResponseEntity<FallbackDto>> fallback(
             RequestCreateOrderDto requestCreateOrderDto, RuntimeException runtimeException){
 
-        return ResponseEntity.internalServerError().body(
-                FallbackDto.builder()
-                        .message("Something went wrong, try again later")
-                        .build()
-        );
+        return CompletableFuture.supplyAsync(() -> {
+             return ResponseEntity.internalServerError().body(
+                    FallbackDto.builder()
+                            .message("Something went wrong, try again later")
+                            .build()
+            );
+        });
 
     }
 }

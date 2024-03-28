@@ -1,8 +1,1 @@
 rootProject.name = 'minishop-server'
-
-include("config-server")
-include("eureka-discovery-service")
-include("gateway-service")
-include("product-service")
-include("inventory-service")
-include("order-service")

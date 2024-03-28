@@ -1,4 +1,5 @@
 spring:
+
   application:
     name: product-service
 
@@ -8,10 +9,15 @@ spring:
       port: 27017
       database: productDB
 
-
   cloud:
     config:
       enabled: false
+
+
+logging:
+  file:
+    name: logs/product-service.log
+
 server:
   port: 0
 

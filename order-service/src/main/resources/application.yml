@@ -21,12 +21,17 @@ spring:
   application:
     name: order-service
 
+logging:
+  file:
+    name: logs/order-service.log
+
 eureka:
   instance:
     hostname: localhost
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
 resilience4j:
   circuitbreaker:
     instances:

@@ -8,10 +8,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/config-server" />
-            <option value="$PROJECT_DIR$/eureka-discovery-service" />
-            <option value="$PROJECT_DIR$/gateway-service" />
-            <option value="$PROJECT_DIR$/product-service" />
           </set>
         </option>
       </GradleProjectSettings>
@@ -36,6 +32,14 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/gateway-service" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/inventory-service" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/inventory-service" />
           </set>
         </option>
       </GradleProjectSettings>

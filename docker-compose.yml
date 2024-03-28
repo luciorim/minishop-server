@@ -2,23 +2,71 @@ version: "3"
 
 services:
 
-  postgres:
-    image: postgres
-    container_name: schoolhub-postgres
-    expose:
-      - "5432"
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: minishop-zipkin
     ports:
-      - "5433:5432"
-    volumes:
-      - ./dataset:/docker-entrypoint-initdb.d
+      - "9411:9411"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.13
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      discovery.type: single-node
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - elk-network
+
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.13
+    ports:
+      - "5001:5001"
+    volumes:
+      - /Users/luciorim/Desktop/mini/minishop-server/elk/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - /Users/luciorim/Desktop/mini/minishop-server/elk/logstash:/usr/share/logstash/config
+      - /Users/luciorim/Desktop/mini/minishop-server/logs:/usr/share/logstash/logs
+      - /Users/luciorim/Desktop/mini/minishop-server/elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    command: [ "-f", "/usr/share/logstash/config/logstash.conf" ]
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk-network
+
+  kibana:
+      image: docker.elastic.co/kibana/kibana:7.17.13
+      ports:
+        - "5601:5601"
+      environment:
+        ELASTICSEARCH_URL: "http://elasticsearch:9300"
+      depends_on:
+        - logstash
+      networks:
+        - elk-network
+
+networks:
+  elk-network:
+    driver: bridge
+
+#  postgres:
+#    image: postgres
+#    container_name: schoolhub-postgres
+#    expose:
+#      - "5432"
+#    ports:
+#      - "5433:5432"
+#    volumes:
+#      - ./dataset:/docker-entrypoint-initdb.d
+#    environment:
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_USER: postgres
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
 
 
 

@@ -27,3 +27,7 @@ spring:
           predicates:
             - Path=/api/orders/**
 
+logging:
+  file:
+    name: logs/gateway-service.log
+
