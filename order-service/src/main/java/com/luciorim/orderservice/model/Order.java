@@ -3,7 +3,9 @@ package com.luciorim.orderservice.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.nio.DoubleBuffer;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -22,7 +24,12 @@ public class Order {
     @Column(name = "order_number")
     private String orderNumber;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private List<OrderLineItem> orderItems;
+    @Column(name = "total_price")
+    private Double totalPrice;
+
+    @MapKeyColumn(name = "product_id")
+    @Column(name = "quantity")
+    @ElementCollection
+    private Map<String, Integer> orderItems;
+
 }

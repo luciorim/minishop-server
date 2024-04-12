@@ -21,6 +21,17 @@ spring:
   application:
     name: order-service
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            type:
+              mapping: event:com.luciorim.orderservice.event.OrderPlacedEvent
+
 logging:
   file:
     name: logs/order-service.log
@@ -54,4 +65,6 @@ resilience4j:
       inventory:
         max-attempts: 3
         wait-duration: 5s
+
+
 

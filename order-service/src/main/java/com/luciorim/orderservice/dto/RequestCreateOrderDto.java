@@ -11,7 +11,7 @@ import java.util.List;
 public class RequestCreateOrderDto {
 
     @NotNull
-    @JsonProperty("order_items")
-    private List<@Valid OrderLineItemDto> orderItems;
+    @JsonProperty("products_to_check")
+    private List<@Valid CheckProductDto> products;
 
 }

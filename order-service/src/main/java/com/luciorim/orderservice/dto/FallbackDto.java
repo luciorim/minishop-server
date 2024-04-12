@@ -7,8 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public class FallbackDto {
-
     @JsonProperty("message")
     private String message;
-
 }

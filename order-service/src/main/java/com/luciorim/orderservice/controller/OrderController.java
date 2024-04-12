@@ -8,6 +8,7 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,34 +28,22 @@ public class OrderController {
     @CircuitBreaker(name = "inventory", fallbackMethod = "fallback")
     @TimeLimiter(name = "inventory")
     @Retry(name = "inventory")
-    public CompletableFuture<ResponseEntity<Void>> placeOrder(
-            @RequestBody @Valid RequestCreateOrderDto requestCreateOrderDto){
+    public ResponseEntity<Void> placeOrder(
+            @RequestBody @Valid @NotNull RequestCreateOrderDto requestCreateOrderDto){
 
-        return CompletableFuture.supplyAsync(() -> {
             orderService.createOrder(requestCreateOrderDto);
             return ResponseEntity.status(HttpStatus.CREATED).build();
-        });
-
     }
 
     @GetMapping()
     public ResponseEntity<List<ResponseOrderDto>> getAllOrders(){
-
-        return ResponseEntity
-                .ok(orderService.getAllOrders());
-
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    public CompletableFuture<ResponseEntity<FallbackDto>> fallback(
+    public ResponseEntity<FallbackDto> fallback(
             RequestCreateOrderDto requestCreateOrderDto, RuntimeException runtimeException){
 
-        return CompletableFuture.supplyAsync(() -> {
              return ResponseEntity.internalServerError().body(
-                    FallbackDto.builder()
-                            .message("Something went wrong, try again later")
-                            .build()
-            );
-        });
-
+                    FallbackDto.builder().message("Something went wrong, try again later").build());
     }
 }

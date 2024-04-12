@@ -1,21 +1,20 @@
 package com.luciorim.orderservice.service;
 
 import com.luciorim.orderservice.dto.*;
-import com.luciorim.orderservice.mapper.OrderLineItemMapper;
+import com.luciorim.orderservice.event.OrderPlacedEvent;
 import com.luciorim.orderservice.mapper.OrderMapper;
 import com.luciorim.orderservice.model.Order;
-import com.luciorim.orderservice.model.OrderLineItem;
-import com.luciorim.orderservice.repository.OrderLineItemRepository;
 import com.luciorim.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,64 +24,34 @@ import java.util.stream.Collectors;
 @Transactional
 public class OrderService {
 
-    private final OrderLineItemMapper orderLineItemMapper;
     private final OrderMapper orderMapper;
     private final OrderRepository orderRepository;
-    private final OrderLineItemRepository orderLineItemRepository;
-    private final WebClient.Builder webClientBuilder;
+    private final WebClient webClient;
+    private final KafkaTemplate kafkaTemplate;
 
     public void createOrder(RequestCreateOrderDto requestCreateOrderDto) {
 
-        log.info("List of items in requestOrderDto: {}", requestCreateOrderDto.getOrderItems());
+        log.info("List of items in requestOrderDto: {}", requestCreateOrderDto.getProducts());
 
-        List<OrderLineItem> orderLineItems = requestCreateOrderDto
-                .getOrderItems()
-                .stream()
-                .map(orderLineItemMapper::toEntity)
-                .toList();
+        //call product service and place order if prod is in stock
+        var productsEnabled = webClient.post()
+                .uri("http://product-service/api/products/check-stock")
+                .body(BodyInserters.fromValue(requestCreateOrderDto))
+                .retrieve()
+                .bodyToMono(ResponseProductsEnabledDto.class)
+                .block();
 
-        Map<String, Integer> skuCodeWithNeededQuantity = orderLineItems.stream()
-                .collect(Collectors.toMap(OrderLineItem::getSkuCode, OrderLineItem::getQuantity));
+        if(productsEnabled != null && productsEnabled.getAreAllEnabled()) {
 
-        List<String> scuCodes = requestCreateOrderDto
-                .getOrderItems()
-                .stream()
-                .map(OrderLineItemDto::getSkuCode)
-                .toList();
+            Order order = new Order();
+            order.setOrderNumber(UUID.randomUUID().toString());
+//            order.setOrderItems();
 
-        //call inventory service and place order if prod is in stock
+            kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber()));
+            orderRepository.save(order);
+            log.info("Created new Order: {}", order);
+        }
 
-       ResponseInventoryDto[] responseInventoryDtos = webClientBuilder.build().get()
-                            .uri("http://inventory-service/api/inventories",
-                                    uriBuilder -> uriBuilder.queryParam("skuCodes", scuCodes).build())
-                            .retrieve()
-                            .bodyToMono(ResponseInventoryDto[].class)
-                            .block();
-
-       for(ResponseInventoryDto returnedInventory: responseInventoryDtos){
-
-           var skuCode = returnedInventory.getSkuCode();
-           var enabledQuantity = returnedInventory.getEnabledQuantity();
-
-           if(skuCodeWithNeededQuantity.get(skuCode) > enabledQuantity){
-               throw new IllegalArgumentException("There is no enough products, please try again later");
-           }
-       }
-
-       var productsInStock = Arrays.stream(responseInventoryDtos)
-                       .allMatch(ResponseInventoryDto::isInStock);
-
-       if(productsInStock) {
-           Order order = Order.builder()
-                   .orderNumber(UUID.randomUUID().toString())
-                   .orderItems(orderLineItems)
-                   .build();
-
-           orderRepository.save(order);
-           log.info("Created new Order: {}", order);
-       }else{
-           throw new IllegalArgumentException("Products not in stock, please try again later");
-       }
     }
 
     public List<ResponseOrderDto> getAllOrders() {

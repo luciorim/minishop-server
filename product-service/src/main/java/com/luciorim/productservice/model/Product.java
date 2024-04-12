@@ -24,4 +24,13 @@ public class Product {
     @Field(name = "product_price")
     private Long productPrice;
 
+    @Field(name = "scu_code")
+    private String sduCode;
+
+    @Field(name = "enabled_quantity")
+    private Integer enabledQuantity;
+
+    @Field(name = "iamge_url")
+    private String imageUrl;
+
 }

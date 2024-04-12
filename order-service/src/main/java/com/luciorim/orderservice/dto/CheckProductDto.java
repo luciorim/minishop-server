@@ -5,10 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Builder
-public class OrderLineItemDto {
+@EqualsAndHashCode(of = "skuCode")
+public class CheckProductDto {
 
     @NotNull
     @JsonProperty("sku_code")
@@ -16,12 +18,7 @@ public class OrderLineItemDto {
 
     @NotNull
     @Positive
-    @JsonProperty("price")
-    private Long price;
-
-    @NotNull
-    @Positive
-    @JsonProperty("quantity")
-    private Integer quantity;
+    @JsonProperty("needed_quantity")
+    private Integer neededQuantity;
 
 }
