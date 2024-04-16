@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Map;
@@ -16,11 +18,11 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class ProductServiceImpl implements ProductService{
 
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
+    private final WebClient webClient;
 
     public List<ResponseProductDto> getAllProducts() {
         return productRepository.findAll()
@@ -29,15 +31,27 @@ public class ProductServiceImpl implements ProductService{
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void createProduct(CreateProductDto createProductDto) {
-        var product = Product.builder()
-                .productPrice(createProductDto.getProductPrice())
-                .productName(createProductDto.getProductName())
-                .description(createProductDto.getDescription())
-                .build();
+        var product = new Product();
+        product.setProductName(createProductDto.getProductName());
+        product.setDescription(createProductDto.getDescription());
+        product.setProductPrice(createProductDto.getProductPrice());
 
         //call image-service to upload photo to S3 and get url
+        if(createProductDto.getImage() != null){
+            RequestUploadImageDto requestUploadImageDto = new RequestUploadImageDto();
+            requestUploadImageDto.setImage(createProductDto.getImage());
 
+            ResponseUploadImageDto responseUploadImageDto = webClient.post()
+                    .uri("http://image-service/api/images")
+                    .body(BodyInserters.fromValue(requestUploadImageDto))
+                    .retrieve()
+                    .bodyToMono(ResponseUploadImageDto.class)
+                    .block();
+
+            product.setImageUrl(responseUploadImageDto.getImageUrl());
+        }
 
         log.info("Created product: {}", product);
         productRepository.save(product);

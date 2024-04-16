@@ -1,11 +1,15 @@
 package com.luciorim.productservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResponseProductDto {
 
     @JsonProperty("id")
@@ -19,5 +23,8 @@ public class ResponseProductDto {
 
     @JsonProperty("product_price")
     private Long productPrice;
+
+    @JsonProperty("image_url")
+    private String imageUrl;
 
 }

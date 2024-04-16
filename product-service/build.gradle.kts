@@ -34,6 +34,8 @@ dependencies {
     implementation("org.mongodb:mongodb-driver-sync")
 
     implementation("org.springframework.boot:spring-boot-starter-validation:3.2.3")
+
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.2.4")
 }
 
 dependencyManagement {

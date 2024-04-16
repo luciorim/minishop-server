@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 public class ProductMapper {
 
     public ResponseProductDto toDto(Product product){
-        return ResponseProductDto.builder()
-                .id(product.getId())
-                .productName(product.getProductName())
-                .description(product.getDescription())
-                .productPrice(product.getProductPrice())
-                .build();
+        ResponseProductDto responseProductDto = new ResponseProductDto();
+        responseProductDto.setProductName(product.getProductName());
+        responseProductDto.setDescription(product.getDescription());
+        responseProductDto.setProductPrice(product.getProductPrice());
+        responseProductDto.setImageUrl(product.getImageUrl());
+        return responseProductDto;
     }
 }

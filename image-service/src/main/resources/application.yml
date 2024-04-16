@@ -1,0 +1,16 @@
+spring:
+  application.name: image-service
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://${HOST}:8761/eureka/
+
+aws:
+  s3:
+    access: ${AWS_ACCESS}
+    secret: ${AWS_SECRET}
+    region: ${AWS_REGION}
+    bucket: ${AWS_BUCKET}
